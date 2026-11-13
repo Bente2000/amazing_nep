@@ -1,0 +1,179 @@
+NUMPY stijl:
+
+#	Section     	    Required?	Purpose
+1	Short summary	    Yes	                                One line describing what the function does
+2	Deprecation warning	When applicable	                    Uses a .. deprecated:: directive, not a section header
+3	Extended summary	Optional	                        A few sentences clarifying behavior
+4	Parameters	        When the signature has arguments	Name, type, and description of each input
+5	Returns	            When the function returns something	Type (required) and description of each value
+6	Yields	            Generators only	                    Values produced by the generator
+7	Receives	        Generators with .send()	            Values passed into yield expressions
+8	Other Parameters	Rarely used inputs	                Keeps Parameters uncluttered
+9	Raises	            Optional	                        Exceptions raised and the conditions that trigger them
+10	Warns	            Optional	                        Warnings emitted at runtime
+11	Warnings	        Optional							Free-text cautions for the reader
+12	See Also	        Optional							Pointers to related functions and classes
+13	Notes	            Optional							Algorithms, math, implementation background
+14	References	        Optional							Citations backing the Notes section
+15	Examples	        Strongly encouraged	                Runnable doctest-style usage
+
+
+DOCSTRINGS:
+- A docstring is a string literal that occurs as the first statement in a module,
+  function, class, or method definition. Such a docstring becomes the 
+  __doc__ special attribute of that object.
+
+- A package may be documented in the module docstring of the 
+  __init__.py file in the package directory.
+
+- voeg toe voor: classes, functions, modules
+- omvat o.a.: purpose, parameters/args, returns
+
+PURPOSE:
+^
+"""This is the form of a docstring.
+
+It can be spread over several lines.
+First line is short and imperative.
+
+"""
+
+PARAMETERS:
+- Receives voor generators (hoeft niet)
+- geen parameters? laat weg
+^
+Parameters
+----------
+x : type
+    Description of parameter `x`.
+y
+    Description of parameter `y` (with type not specified)
+
+- precieze types:
+
+filename : str
+copy : bool
+dtype : data-type
+iterable : iterable object
+shape : int or tuple of int
+files : list of str
+
+- When two or more input parameters have exactly the same type, 
+  shape and description, they can be combined:
+
+x1, x2 : array_like
+    Input arrays, description of `x1`, `x2`.
+
+- When a parameter can only assume one of a fixed set of values,
+  those values can be listed in braces, with the default appearing first:
+
+order : {'C', 'F', 'A'}
+    Description of `order`.
+
+- If it is not necessary to specify a keyword argument, use optional:
+
+x : int, optional
+
+Optional keyword parameters have default values, which are displayed as part of 
+the function signature. They can also be detailed in the description:
+
+Description of parameter `x` (the default is -1, which implies summation
+over all axes).
+
+
+RETURNS:
+- naam hoeft niet, type wel
+- None return? laat weg
+- yield voor generators (zelfde opmaak als returns)
+^
+Returns
+-------
+int
+    Description of anonymous integer return value.
+err_msg : str or None                      (alleen naam als die bij args staat)
+    Human readable error message, or None on success.
+
+
+RAISES:
+An optional section detailing which errors get raised and under what conditions:
+- This section should be used judiciously, i.e., only for errors that are 
+  non-obvious or have a large chance of getting raised.
+^
+Raises
+------
+LinAlgException
+    If the matrix is not numerically invertible.
+
+
+
+SEE ALSO:
+- An optional section used to refer to related code. This section can be very
+  useful, but should be used judiciously. The goal is to direct users to other
+  functions they may not be aware of, or have easy means of discovering
+  (by looking at the module docstring, for example). 
+
+
+NOTES:
+- An optional section that provides additional information about the code,
+  possibly including a discussion of the algorithm. This section may include
+  mathematical equations, written in LaTeX format:
+
+Notes
+-----
+The FFT is a fast implementation of the discrete Fourier transform:
+
+.. math:: X(e^{j\omega } ) = x(n)e^{ - j\omega n}
+
+
+CLASS DOCSTRING:
+- uses everything listed above except returns
+- Attributes section:
+^
+Attributes
+----------
+x : float
+    The X coordinate.
+y : float
+    The Y coordinate.
+
+- In general, it is not necessary to list class methods. Those that are not part
+  of the public API have names that start with an underscore. In some cases,
+  however, a class may have a great many methods, of which only a few are
+  relevant (e.g., subclasses of ndarray). Then, it becomes useful to have an
+  additional Methods section:
+
+class Photo(ndarray):
+    """
+    Array with associated photographic information.
+
+    ...
+
+    Attributes
+    ----------
+    exposure : float
+        Exposure in seconds.
+
+    Methods
+    -------
+    colorspace(c='rgb')
+        Represent the photo in the given colorspace.
+    gamma(n=1.0)
+        Change the photo's gamma exposure.
+
+    """
+
+- If it is necessary to explain a private method (use with care!), it can be
+  referred to in the Extended Summary or the Notes section. Do not list private
+  methods in the methods section.
+
+- Note that self is not listed as the first parameter of methods.
+
+
+
+METHOD DOCSTRINGS:
+- Document these as you would any other function. Do not include self in the
+  list of parameters. If a method has an equivalent function (which is the case
+  for many ndarray methods for example), the function docstring should contain
+  the detailed documentation, and the method docstring should refer to it. Only
+  put brief summary and See Also sections in the method docstring. The method
+  should use a Returns or Yields section, as appropriate.

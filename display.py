@@ -23,7 +23,7 @@ def _cell_content(maze: MazeGenerator, x: int, y: int,
     """Return the 3-character content of a cell, coloured."""
     if (x, y) == maze.entry:
         return f"{ENTRY_COLOUR} S {RESET}"
-    if (x, y) == maze.exit:
+    if (x, y) == maze.exit_:
         return f"{EXIT_COLOUR} E {RESET}"
     if (x, y) in maze.pattern_cells:
         return f"{PATTERN_COLOUR}   {RESET}"
@@ -95,7 +95,7 @@ def run_menu(maze: MazeGenerator, output_file: str) -> None:
         if choice == "1":
             maze.generate()
             maze.solve()
-            write_output(maze.grid, maze.entry, maze.exit, output_file, path)
+            write_output(maze.grid, maze.entry, maze.exit_, output_file, path)
         elif choice == "2":
             show_path = not show_path
         elif choice == "3":

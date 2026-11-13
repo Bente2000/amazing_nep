@@ -26,7 +26,7 @@ def main() -> int: # volgorde path check checken
             width=config.width,
             height=config.height,
             entry=config.entry,
-            exit=config.exit, # pas exit aan
+            exit_=config.exit_, # pas exit aan
             perfect=config.perfect,
             #seed=config.seed
         )
@@ -41,7 +41,7 @@ def main() -> int: # volgorde path check checken
     path = maze.solve()
     try:
         #write_output(maze, config.output_file, path)
-        write_output(grid, config.entry, config.exit, config.output_file, path)
+        write_output(grid, config.entry, config.exit_, config.output_file, path)
         run_menu(maze, config.output_file)
     except OSError as e:
         print(f"Error: cannot write ouput file: {e}", file=sys.stderr)

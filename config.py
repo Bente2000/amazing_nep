@@ -1,13 +1,35 @@
+"""Build a configuration file that can be passed to the maze.
+"""
+
 from dataclasses import dataclass
 from config_values import ConfigError, parse_int, parse_bool, parse_coordinates
 
 # dataclass decorator uses __init__ and sets __repr__ to print class nicely
 @dataclass(frozen=True) # frozen dataclasses don't have their values changed
 class Config:
+    """Used to store the mandatory keys found in the config file.
+
+    Attributes
+    ----------
+    width : int
+        Width of the maze.
+    height : int
+        Height of the maze.
+    entry : tuple[int, int]
+        Entry coordinates of the maze.
+    _exit : tuple[int, int]
+        Exit coordinates of the maze.
+    output_file : str
+        Stores the shortest found path in hexadecimals.
+    perfect : bool
+        When True there is one solution, when False there is multiple (pacman style).
+    seed : int | None
+                                    # CHECK SUBJECT
+    """
     width: int
     height: int
     entry: tuple[int, int]
-    exit: tuple[int, int]
+    exit_: tuple[int, int]
     output_file: str
     perfect: bool
     seed: int | None = None # int | None is the type hint,
@@ -17,9 +39,28 @@ class Config:
 # initialize tuple for checking if keys are present
 MANDATORY_KEYS: tuple[str, ...] = ("WIDTH", "HEIGHT", "ENTRY", "EXIT",
                                    "OUTPUT_FILE", "PERFECT")
+"""The keys needed for the maze.
+"""
 
 
 def build_config(config_path: str) -> Config:
+    """Read config.txt and build config class if the file contains the right types.
+
+    Parameters
+    ----------
+    config_path : str
+        The path to the config file
+
+    Returns
+    -------
+    Config
+        All the values needed for generating a maze.
+
+    Raises
+    ------
+    ConfigError
+        If a mandatory key is missing.
+    """
     raw: dict[str, str] = read_config(config_path) # raw is a dict
     missing: list[str] = [key for key in MANDATORY_KEYS if key not in raw]
     if missing:
@@ -35,7 +76,7 @@ def build_config(config_path: str) -> Config:
             width=width,
             height=height,
             entry=entry,
-            exit=exit_,
+            exit_=exit_,
             output_file=raw["OUTPUT_FILE"],
             perfect=parse_bool("PERFECT", raw["PERFECT"]),
             seed=seed)
@@ -43,6 +84,25 @@ def build_config(config_path: str) -> Config:
 
 
 def read_config(config_path: str) -> dict[str, str]: # returns raw file as dict
+    """
+
+    Parameters
+    ----------
+    config_path : str
+        The path to the config file.
+
+    Returns
+    -------
+    dict[str, str]
+        The config file parsed to a dictionary with the right syntax and elements.
+
+    Raises
+    ------
+    ConfigError
+        If a key, value or seperator is missing.
+        If duplicate key is found.
+        If the config file can't be found or read.
+    """
     maze_data: dict[str, str] = {} # initialize empty dict
     try: #read key=value pairs from file to dict, ignore blank and # lines
         with open(config_path, encoding="utf-8") as file:

@@ -14,14 +14,14 @@ Position = tuple[int, int]
 class MazeGenerator:
 
     def __init__(self, width: int, height: int, entry: Position,
-                 exit: Position, perfect: bool = False, # false = default
+                 exit_: Position, perfect: bool = False, # false = default
                  seed: int | None = None) -> None:
-        self._check_types(width, height, entry, exit, perfect, seed) # juiste waardes meegekregen?
-        self._check_values(width, height, entry, exit, perfect)
+        self._check_types(width, height, entry, exit_, perfect, seed) # juiste waardes meegekregen?
+        self._check_values(width, height, entry, exit_, perfect)
         self.width = width
         self.height = height
         self.entry = entry
-        self.exit = exit
+        self.exit_ = exit_
         self.perfect = perfect
         self.seed = seed
         self.random = random.Random(seed) # instance of Random class from random 
@@ -31,7 +31,7 @@ class MazeGenerator:
 
     @staticmethod # hoeft self niet te gebruiken, dus eigenlijk een plain method
     #hier geplaatst vanwege organisatie
-    def _check_types(width: Any, height: Any, entry: Any, exit: Any, 
+    def _check_types(width: Any, height: Any, entry: Any, exit_: Any, 
                      perfect: Any, seed: Any) -> None:
         if not isinstance(width, int):
             raise ValueError("Width must be an integer")
@@ -41,9 +41,9 @@ class MazeGenerator:
             raise ValueError("Entry must be tuple of two integers: (x,y)")
         if not isinstance(entry[0], int) or not isinstance(entry[1], int):
             raise ValueError("Entry must be tuple of two integers: (x,y)")
-        if not isinstance(exit, tuple) or len(exit) != 2:
+        if not isinstance(exit_, tuple) or len(exit_) != 2:
             raise ValueError("Exit must be tuple of two integers: (x,y)")
-        if not isinstance(exit[0], int) or not isinstance(exit[1], int):
+        if not isinstance(exit_[0], int) or not isinstance(exit_[1], int):
             raise ValueError("Exit must be tuple of two integers: (x,y)")
         if not isinstance(perfect, bool):
             raise ValueError("Perfect must be set to True or False")
@@ -52,16 +52,16 @@ class MazeGenerator:
 
     @staticmethod
     def _check_values(width: int, height: int, entry: Position,
-                      exit: Position, perfect: bool) -> None:
+                      exit_: Position, perfect: bool) -> None:
         if width < 1 or height < 1:
             raise ValueError("Maze dimentions must be positive")
         if not perfect and (min(width, height) < 2 or width * height < 6):
             raise ValueError("Maze must fit at least two loops in pac-man mode"
                              " (non-perfect maze)")
-        for name, (x,y) in (("Entry", entry), ("Exit", exit)):
+        for name, (x,y) in (("Entry", entry), ("Exit", exit_)):
             if not (0 <= x < width and 0 <= y < height):
                 raise ValueError(f"{name} is outside of the maze")
-        if entry == exit:
+        if entry == exit_:
             raise ValueError("Entry and exit must be different from each other")
 
 
@@ -69,7 +69,7 @@ class MazeGenerator:
         """Generate a new maze and return the grid."""
         self.grid = create_grid(self.width, self.height) # nodig voor regenerate, maak verse grid
         self.pattern_cells = create_42(
-            self.width, self.height, self.entry, self.exit)
+            self.width, self.height, self.entry, self.exit_)
 
         carve_perfect_maze(
             self.grid, self.entry, self.random, self.pattern_cells)
@@ -81,4 +81,4 @@ class MazeGenerator:
 
     def solve(self) -> list[Position] | None:
         """Find the shortest path from entry to exit."""
-        return solve(self.grid, self.entry, self.exit)
+        return solve(self.grid, self.entry, self.exit_)

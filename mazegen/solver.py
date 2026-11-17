@@ -31,7 +31,7 @@ def solve(grid: Grid, entry: Position, exit_: Position) -> list[Position] | None
     -------
     list[Position] | None
         list[tuple[int, int]] | None
-        The shortest path or None if no path is found.
+        The shortest path (in coordinates) or None if no path is found.
     """
     height = len(grid)
     width = len(grid[0])

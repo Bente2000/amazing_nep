@@ -6,8 +6,8 @@ class ConfigError(Exception):
 
     Parameters
     ----------
-    Exception         ## meer info
-        
+    Exception
+        The class that all user-defined exceptions should be derived from.
     """
     "Configuration file is missing or invalid."
 

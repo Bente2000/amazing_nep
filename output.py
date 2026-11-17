@@ -1,8 +1,15 @@
-"""Write a maze to the output file (hexadecimal wall format)."""
+"""Write a maze and it's shortest solution to the output file.
+"""
 from mazegen.grid import Grid, Position
 
 # Bit value of each wall: a closed wall sets its bit to 1
 WALL_BITS = {"N": 1, "E": 2, "S": 4, "W": 8}
+"""Every value, when set to True, represents a closed wall in that direction.
+
+Example
+-------
+
+"""
 
 # Step between two neighbouring cells -> direction letter
 DIRECTION = {
@@ -11,12 +18,35 @@ DIRECTION = {
     (0, 1): "S",
     (-1, 0): "W",
 }
+"""The key is the step (in x and y) towards the direction given as value.
+
+    dict[tuple, str]
+"""
 
 def write_output(grid: Grid, entry: Position, exit_: Position, filename: str, 
                  path: list[tuple[int, int]] | None) -> None:
-    """Write the maze, entry, exit and shortest path to `filename`.
+    """Write the maze, entry, exit and shortest path to the file.
 
-    Raises OSError if the file cannot be written.
+    Parameters
+    ----------
+    grid : Grid
+        list[list[dict[str, Any]]]
+        Convert the grid to hexadecimals using the `"walls"` data.
+    entry : Position
+        tuple[int, int]
+        The coordinates of the entry of the maze.
+    exit_ : Position
+        tuple[int, int]
+        The coordinates of the exit of the maze.
+    filename : str
+        The name of the output file.
+    path : list[tuple[int, int]] | None
+        Convert the path from coordinates to directions.
+
+    Raises
+    ------
+    OSError
+        If the ouput file can't be written to.
     """
 
     lines = []
@@ -33,8 +63,21 @@ def write_output(grid: Grid, entry: Position, exit_: Position, filename: str,
         file.write("\n".join(lines) + "\n")
 
 
-def cell_to_hex(walls: dict[str, bool]) -> str:
+def cell_to_hex(walls: dict[str, bool]) -> str:        # hoezo str, bool???
     """Encode the walls of one cell as a single hexadecimal digit."""
+
+    """
+
+    Parameters
+    ----------
+    walls : dict[str, bool]
+        Use the direction key to get the value for each wall and use them as
+        `WALL_BITS`.
+    Returns
+    -------
+    str
+        The values for the directions in `WALL_BITS` converted to hexadecimals.
+    """
     value = 0
     for direction, bit in WALL_BITS.items(): # "N":1, "E":2, "S":4, "W":8
         if walls[direction]: # if walls["N"] == True, False, True, True

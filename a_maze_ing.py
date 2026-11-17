@@ -1,3 +1,6 @@
+"""The main program.
+"""
+
 import sys
 from mazegen import MazeGenerator
 from config import build_config
@@ -11,6 +14,30 @@ from output import write_output
 
 
 def main() -> int: # volgorde path check checken
+    """Generate a maze based on a config file.
+
+    Build a config file out of config.txt, pass the config values to the maze.
+    Create a grid by using the generate method from the MazeGenerator class.
+    Use the solve method to find the shortest path.
+    Write the grid in hexadecimal and the path in directions, from entry to
+    exit, to the output file.
+    Run an interactive menu until the user chooses to quit.
+
+    Returns
+    -------
+    int
+        Returns 1 on error, 0 on success.
+
+    Raises
+    ------
+    ConfigError
+        If the values in the config file are of the wrong type, can't be read or are
+        not written in the right syntax.
+    ValueError
+        If the values in the config file don't comply with a valid maze.
+    OSError
+        If the output file can't be written.
+    """
     if len(sys.argv) != 2:
         print(f"Usage: python3 {sys.argv[0]} config.txt", file=sys.stderr)
         return 1
@@ -44,7 +71,7 @@ def main() -> int: # volgorde path check checken
         write_output(grid, config.entry, config.exit_, config.output_file, path)
         run_menu(maze, config.output_file)
     except OSError as e:
-        print(f"Error: cannot write ouput file: {e}", file=sys.stderr)
+        print(f"Error: can't write ouput file: {e}", file=sys.stderr)
         return 1
     print("Maze generated.")
 

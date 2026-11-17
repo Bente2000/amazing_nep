@@ -24,7 +24,7 @@ class Config:
     perfect : bool
         When True there is one solution, when False there is multiple (pacman style).
     seed : int | None
-                                    # CHECK SUBJECT
+        The seed of the maze or when None, a random maze will be generated.
     """
     width: int
     height: int

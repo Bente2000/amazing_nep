@@ -45,37 +45,36 @@ def render_ascii(maze: MazeGenerator,
 
     # Top border: north walls of the first row
     top = wall("+")
-    for x in range(maze.width):
-        closed = maze.grid[0][x]["walls"]["N"]
-        top += (wall("---") if closed else "   ") + wall("+")
+    for _ in range(maze.width):
+        top += wall("---") + wall("+")
     lines.append(top)
 
     for y in range(maze.height):
-        middle = wall("|")
-        bottom = wall("+")
+        middle = wall("|") # west muur van maze
+        bottom = wall("+") # west muur van maze
 
         for x in range(maze.width):
             cell = maze.grid[y][x]
-            #cell = maze.get_cell(x, y)
-            content = _cell_content(maze, x, y, path_cells)
+            content = _cell_content(maze, x, y, path_cells) # voor speciale
+            # tekens / kleuren (pattern, entry, exit, path)
 
             # East wall right of the cell
             middle += content + (wall("|") if cell["walls"]["E"] else " ")
             # South wall below the cell
             bottom += ((wall("---") if cell["walls"]["S"] else "   ")
                         + wall("+"))
+        lines.append(middle) # append per row, middle = grote string
+        lines.append(bottom) # append per row, bottom = grote string
+        # 2 lines per cel
 
-        lines.append(middle)
-        lines.append(bottom)
-
-    return "\n".join(lines)
+    return "\n".join(lines) #maze = lange string gevuld met strings en kleurcodes
 
 
-def run_menu(maze: MazeGenerator, output_file: str) -> None:
+def run_menu(maze: MazeGenerator, output_file: str, path: list[Position] | None) -> None:
     """Show the maze and handle user choices until the user quits."""
     show_path = False
     colour_index = 0
-    path = maze.solve()
+    #path = maze.solve()
 
     while True: # until error or exit
         print(render_ascii(maze, path if show_path else None,
@@ -88,8 +87,12 @@ def run_menu(maze: MazeGenerator, output_file: str) -> None:
 
         try:
             choice = input("Choice? (1-4): ").strip()
-        except (EOFError, KeyboardInterrupt):
-            print()
+        except (KeyboardInterrupt):
+            print("\n")
+        except (EOFError):
+            print("EOF")
+       # except EOFError:
+       #     print("ERROR")
             return
 
         if choice == "1":

@@ -63,7 +63,7 @@ def write_output(grid: Grid, entry: Position, exit_: Position, filename: str,
         file.write("\n".join(lines) + "\n")
 
 
-def cell_to_hex(walls: dict[str, bool]) -> str:        # hoezo str, bool???
+def cell_to_hex(walls: dict[str, bool]) -> str:
     """Encode the walls of one cell as a single hexadecimal digit."""
 
     """

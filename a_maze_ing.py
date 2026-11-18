@@ -69,7 +69,7 @@ def main() -> int: # volgorde path check checken
     try:
         #write_output(maze, config.output_file, path)
         write_output(grid, config.entry, config.exit_, config.output_file, path)
-        run_menu(maze, config.output_file)
+        run_menu(maze, config.output_file, path)
     except OSError as e:
         print(f"Error: can't write ouput file: {e}", file=sys.stderr)
         return 1

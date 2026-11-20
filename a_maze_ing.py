@@ -73,7 +73,6 @@ def main() -> int: # volgorde path check checken
     except OSError as e:
         print(f"Error: can't write ouput file: {e}", file=sys.stderr)
         return 1
-    print("Maze generated.")
 
     return 0
 #    try:                             # VERSIE 2: elke maze geprint, maar cirkel

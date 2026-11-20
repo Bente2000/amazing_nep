@@ -12,10 +12,12 @@ WALL_COLOURS = [
     "\033[35m",  # magenta
     "\033[36m",  # cyan
 ]
+
 ENTRY_COLOUR = "\033[92m"
 EXIT_COLOUR = "\033[91m"
 PATH_COLOUR = "\033[93m"
-PATTERN_COLOUR = "\033[45m"  # magenta background colour, so it stands out
+PATTERN_COLOUR = "\033[45m"  # magenta background
+
 
 
 def _cell_content(maze: MazeGenerator, x: int, y: int,
@@ -32,6 +34,42 @@ def _cell_content(maze: MazeGenerator, x: int, y: int,
     return "   "
 
 
+#def render_ascii(maze: MazeGenerator,
+#                 path: list[Position] | None = None,
+#                 wall_colour: str = WALL_COLOURS[0]) -> str:
+#    """Return the maze as a coloured ASCII string."""
+#    path_cells = set(path) if path else set()
+#
+#    def wall(text: str) -> str:
+#        return f"{wall_colour}{text}{RESET}"
+#
+#    lines = []
+#
+#    # Top border: north walls of the first row
+#    top = wall("+")
+#    for _ in range(maze.width):
+#        top += wall("---") + wall("+")
+#    lines.append(top)
+#
+#    for y in range(maze.height):
+#        middle = wall("|") # west muur van maze
+#        bottom = wall("+") # west muur van maze
+#
+#        for x in range(maze.width):
+#            cell = maze.grid[y][x]
+#            content = _cell_content(maze, x, y, path_cells) # voor speciale
+#            # tekens / kleuren (pattern, entry, exit, path)
+#
+#            # East wall right of the cell
+#            middle += content + (wall("|") if cell["walls"]["E"] else " ")
+#            # South wall below the cell
+#            bottom += ((wall("---") if cell["walls"]["S"] else "   ")
+#                        + wall("+"))
+#        lines.append(middle) # append per row, middle = grote string
+#        lines.append(bottom) # append per row, bottom = grote string
+#        # 2 lines per cel
+#
+#    return "\n".join(lines) #maze = lange string gevuld met strings en kleurcodes
 def render_ascii(maze: MazeGenerator,
                  path: list[Position] | None = None,
                  wall_colour: str = WALL_COLOURS[0]) -> str:
@@ -44,25 +82,43 @@ def render_ascii(maze: MazeGenerator,
     lines = []
 
     # Top border: north walls of the first row
-    top = wall("+")
-    for _ in range(maze.width):
-        top += wall("---") + wall("+")
+    top = wall(":)")
+    for _ in range(maze.width - 1):
+        top += wall("~~~~")# + wall("-")
+    top += wall("~:)")# + wall("-")
     lines.append(top)
 
     for y in range(maze.height):
-        middle = wall("|") # west muur van maze
-        bottom = wall("+") # west muur van maze
+        middle = wall(":") # west muur van maze
+        if y == maze.height - 1:
+            bottom = wall(":)") # west muur van maze
+        else:
+            bottom = wall(":") # west muur van maze
 
-        for x in range(maze.width):
+        for x in range(maze.width - 1):
             cell = maze.grid[y][x]
             content = _cell_content(maze, x, y, path_cells) # voor speciale
             # tekens / kleuren (pattern, entry, exit, path)
-
-            # East wall right of the cell
             middle += content + (wall("|") if cell["walls"]["E"] else " ")
-            # South wall below the cell
-            bottom += ((wall("---") if cell["walls"]["S"] else "   ")
-                        + wall("+"))
+            if y == maze.height - 1:
+                bottom += wall("~~~~")
+            else:
+                if cell["walls"]["S"]:
+                    bottom += wall("===O")
+                elif cell["walls"]["E"]:
+                    bottom += wall("   O")
+                else:
+                    bottom += wall("    ")
+        x += 1
+        cell = maze.grid[y][x]
+        content = _cell_content(maze, x, y, path_cells)
+        middle += content + wall(")")
+        if y == maze.height - 1:
+            bottom += wall("~:)")
+        elif cell["walls"]["S"]:
+            bottom += wall("===)")
+        elif cell["walls"]["E"]:
+            bottom += wall("   )")
         lines.append(middle) # append per row, middle = grote string
         lines.append(bottom) # append per row, bottom = grote string
         # 2 lines per cel
@@ -75,35 +131,39 @@ def run_menu(maze: MazeGenerator, output_file: str, path: list[Position] | None)
     show_path = False
     colour_index = 0
     #path = maze.solve()
+    valid_choice = True
 
     while True: # until error or exit
-        print(render_ascii(maze, path if show_path else None,
-                           WALL_COLOURS[colour_index]))
-        print("\n=== A-Maze-ing ===")
-        print("1. Re-generate a new maze")
-        print("2. Show / Hide the shortest path")
-        print("3. Rotate the wall colours")
-        print("4. Quit")
+        if valid_choice:
+            print(render_ascii(maze, path if show_path else None,
+                               WALL_COLOURS[colour_index]))
+            print("\nA-Maze-ing: You have generated a maze.\n")
+            print("1: Show/hide shortest path")
+            print("2: Change wall colours")
+            print("3: Generate a new maze")
+            print("4: Quit")
 
         try:
-            choice = input("Choice? (1-4): ").strip()
-        except (KeyboardInterrupt):
+            choice = input("\nChoose an option (1 ,2 ,3 or 4): ").strip()
+        except (KeyboardInterrupt): # voor ^D
             print("\n")
-        except (EOFError):
-            print("EOF")
-       # except EOFError:
-       #     print("ERROR")
             return
-
+        except (EOFError): # voor ^C
+            print("\n")
+            return
         if choice == "1":
+            show_path = not show_path
+            valid_choice = True
+        elif choice == "2":
+            colour_index = (colour_index + 1) % len(WALL_COLOURS)#roteer ipv ++
+            valid_choice = True
+        elif choice == "3":
             maze.generate()
             maze.solve()
             write_output(maze.grid, maze.entry, maze.exit_, output_file, path)
-        elif choice == "2":
-            show_path = not show_path
-        elif choice == "3":
-            colour_index = (colour_index + 1) % len(WALL_COLOURS)#roteer ipv ++
+            valid_choice = True
         elif choice == "4":
             return
         else:
             print("Invalid choice, please enter a number from 1 to 4.")
+            valid_choice = False

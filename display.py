@@ -3,20 +3,37 @@ from mazegen.grid import Position
 from output import write_output
 
 RESET = "\033[0m"
+"""str : Colour code that resets the terminal to the default colour.
+"""
+
 WALL_COLOURS = [
-    "\033[37m",  # white
+    "\033[97m",  # bright white
     "\033[31m",  # red
     "\033[32m",  # green
     "\033[33m",  # yellow
     "\033[34m",  # blue
-    "\033[35m",  # magenta
-    "\033[36m",  # cyan
+    "\033[95m",  # bright magenta
+    "\033[96m",  # bright cyan
 ]
+"""list[str] : Colour codes for bright white, red, green, yellow, blue,
+               bright magenta and bright cyan, respectively.
+"""
 
-ENTRY_COLOUR = "\033[92m"
-EXIT_COLOUR = "\033[91m"
-PATH_COLOUR = "\033[93m"
-PATTERN_COLOUR = "\033[45m"  # magenta background
+ENTRY_COLOUR = "\033[7;92m"
+"""str : Bright green.
+"""
+
+EXIT_COLOUR = "\033[7;91m"
+"""str : Bright red.
+"""
+
+PATH_COLOUR = "\033[94m"
+"""str : Bright blue.
+"""
+
+PATTERN_COLOUR = "\033[7;95m"  # magenta background
+"""str : Magenta background.
+"""
 
 
 
@@ -28,9 +45,9 @@ def _cell_content(maze: MazeGenerator, x: int, y: int,
     if (x, y) == maze.exit_:
         return f"{EXIT_COLOUR} E {RESET}"
     if (x, y) in maze.pattern_cells:
-        return f"{PATTERN_COLOUR}   {RESET}"
+        return f"{PATTERN_COLOUR}✿🌸{RESET}"
     if (x, y) in path_cells:
-        return f"{PATH_COLOUR} * {RESET}"
+        return f"{PATH_COLOUR}｡🫧{RESET}"
     return "   "
 
 
@@ -70,7 +87,8 @@ def _cell_content(maze: MazeGenerator, x: int, y: int,
 #        # 2 lines per cel
 #
 #    return "\n".join(lines) #maze = lange string gevuld met strings en kleurcodes
-def render_ascii(maze: MazeGenerator,
+
+def render_ascii(maze: MazeGenerator,                # andere versie
                  path: list[Position] | None = None,
                  wall_colour: str = WALL_COLOURS[0]) -> str:
     """Return the maze as a coloured ASCII string."""
@@ -159,7 +177,7 @@ def run_menu(maze: MazeGenerator, output_file: str, path: list[Position] | None)
             valid_choice = True
         elif choice == "3":
             maze.generate()
-            maze.solve()
+            path = maze.solve()
             write_output(maze.grid, maze.entry, maze.exit_, output_file, path)
             valid_choice = True
         elif choice == "4":

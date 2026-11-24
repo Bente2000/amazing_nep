@@ -1,10 +1,16 @@
+"""Show the maze and let the user do actions from a menu.
+"""
+
+
 from mazegen import MazeGenerator
 from mazegen.grid import Position
 from output import write_output
 
+
 RESET = "\033[0m"
 """str : Colour code that resets the terminal to the default colour.
 """
+
 
 WALL_COLOURS = [
     "\033[97m",  # bright white
@@ -19,27 +25,51 @@ WALL_COLOURS = [
                bright magenta and bright cyan, respectively.
 """
 
+
 ENTRY_COLOUR = "\033[7;92m"
-"""str : Bright green.
+"""str : Bright green background.
 """
 
+
 EXIT_COLOUR = "\033[7;91m"
-"""str : Bright red.
+"""str : Bright red background.
 """
+
 
 PATH_COLOUR = "\033[94m"
 """str : Bright blue.
 """
+
 
 PATTERN_COLOUR = "\033[7;95m"  # magenta background
 """str : Magenta background.
 """
 
 
-
-def _cell_content(maze: MazeGenerator, x: int, y: int,
+def cell_content(maze: MazeGenerator, x: int, y: int, # was eerst _prive ?
                   path_cells: set[Position]) -> str:
-    """Return the 3-character content of a cell, coloured."""
+    """Check if we are at a special cell, return the right content.
+
+    Special cells being: the entry, the exit, 42 pattern and the path.
+    Give their content the right colour and reset the colour of the terminal.
+
+    Parameters
+    ----------
+    maze : MazeGenerator
+        Contains the positions of the special cells.
+    x : int
+        The current x-value.
+    y : int
+        The current y-value.
+    path_cells : set[Position]
+        All the coordinates that make up the 42 pattern.
+
+    Returns
+    -------
+    str
+        The 3 characters that form the content of the current cell.
+        Regular cells contain 3 spaces.
+    """
     if (x, y) == maze.entry:
         return f"{ENTRY_COLOUR} S {RESET}"
     if (x, y) == maze.exit_:
@@ -91,7 +121,29 @@ def _cell_content(maze: MazeGenerator, x: int, y: int,
 def render_ascii(maze: MazeGenerator,                # andere versie
                  path: list[Position] | None = None,
                  wall_colour: str = WALL_COLOURS[0]) -> str:
-    """Return the maze as a coloured ASCII string."""
+    """Convert the maze to a coloured string of ASCII characters.
+
+    Parameters
+    ----------
+    maze : MazeGenerator
+        Convert walls, entry, exit, path and pattern to a printable string.
+    path : list[Position] | None
+        The shortest path or None if no path was found.
+    wall_colour : str
+        The first print of the maze is set to be bright white (index 0).
+        Change wall colours by rotating through the list of colours
+        (menu option 2).
+
+    Methods
+    -------
+                ## NIET AF
+
+
+    Returns
+    -------
+    str
+        The maze as a string of ASCII characters.
+    """
     path_cells = set(path) if path else set()
 
     def wall(text: str) -> str:
@@ -115,7 +167,7 @@ def render_ascii(maze: MazeGenerator,                # andere versie
 
         for x in range(maze.width - 1):
             cell = maze.grid[y][x]
-            content = _cell_content(maze, x, y, path_cells) # voor speciale
+            content = cell_content(maze, x, y, path_cells) # voor speciale
             # tekens / kleuren (pattern, entry, exit, path)
             middle += content + (wall("|") if cell["walls"]["E"] else " ")
             if y == maze.height - 1:
@@ -129,7 +181,7 @@ def render_ascii(maze: MazeGenerator,                # andere versie
                     bottom += wall("    ")
         x += 1
         cell = maze.grid[y][x]
-        content = _cell_content(maze, x, y, path_cells)
+        content = cell_content(maze, x, y, path_cells)
         middle += content + wall(")")
         if y == maze.height - 1:
             bottom += wall("~:)")
@@ -145,7 +197,17 @@ def render_ascii(maze: MazeGenerator,                # andere versie
 
 
 def run_menu(maze: MazeGenerator, output_file: str, path: list[Position] | None) -> None:
-    """Show the maze and handle user choices until the user quits."""
+    """Print the maze and let the user do actions presented in a menu.
+
+    Parameters
+    ----------
+    maze : MazeGenerator
+        Used for showing and changing the maze.
+    output_file : str
+        The file that contains the shortest path as a string of directions.
+    path : list[Position] | None
+        The shortest path as a list of coordinates, None if no path is found.
+    """
     show_path = False
     colour_index = 0
     #path = maze.solve()

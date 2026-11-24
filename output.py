@@ -1,5 +1,7 @@
 """Write a maze and it's shortest solution to the output file.
 """
+
+
 from mazegen.grid import Grid, Position
 
 # Bit value of each wall: a closed wall sets its bit to 1

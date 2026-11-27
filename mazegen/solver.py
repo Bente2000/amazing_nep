@@ -4,12 +4,15 @@
 import heapq
 from .grid import Grid, Position
 
+
 DIRECTIONS = {
     "N": (0, -1),  # rows are counted top to bottom, so north is y - 1
     "E": (1, 0),
     "S": (0, 1),
     "W": (-1, 0),
 }
+"""Directions represented as steps (in x and y).
+"""
 
 
 def solve(grid: Grid, entry: Position, exit_: Position) -> list[Position] | None:
@@ -48,7 +51,8 @@ def solve(grid: Grid, entry: Position, exit_: Position) -> list[Position] | None
         -------
         int
         """
-        return (position[0] - exit_[0]) + (position[1] - exit_[1])
+        return (abs(position[0]) - abs(exit_[0])) + (abs(position[1]) -
+                abs(exit_[1]))
 
     open_list: list[tuple[int, Position]] = [] # list[(f-waarde, (x,y)]
     heapq.heappush(open_list, (heuristic(entry), entry)) # g=0, dus h + 0 = f

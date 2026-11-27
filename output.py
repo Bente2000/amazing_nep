@@ -25,7 +25,7 @@ DIRECTION = {
     dict[tuple, str]
 """
 
-def write_output(grid: Grid, entry: Position, exit_: Position, filename: str, 
+def write_output(grid: Grid, entry: Position, exit_: Position, filename: str,
                  path: list[tuple[int, int]] | None) -> None:
     """Write the maze, entry, exit and shortest path to the file.
 
@@ -66,15 +66,14 @@ def write_output(grid: Grid, entry: Position, exit_: Position, filename: str,
 
 
 def cell_to_hex(walls: dict[str, bool]) -> str:
-    """Encode the walls of one cell as a single hexadecimal digit."""
-
-    """
+    """Convert the walls of a cell to a hexadecimal digit.
 
     Parameters
     ----------
     walls : dict[str, bool]
         Use the direction key to get the value for each wall and use them as
         `WALL_BITS`.
+
     Returns
     -------
     str
@@ -87,8 +86,32 @@ def cell_to_hex(walls: dict[str, bool]) -> str:
     return format(value, "x") # convert naar lowercase hexadecimal = b
 
 
-def path_as_directions(path: list[tuple[int, int]]) -> str:
-    """Convert a list of coordinates into a string like 'ESSEN'."""
+def path_as_directions(path: list[tuple[Position]]) -> str:
+    """Convert the path as a list of coordinates to directions as a string.
+
+    Calculate the directions by comparing the coordinates of 2 cells:
+    (the current cell) - (the cell that came before) = step,
+    where step is the direction that this comparison respresents.
+
+    Parameters
+    ----------
+    path : list[tuple[Position]]
+        The path to convert.
+
+    Returns
+    -------
+    str
+        The path as directions.
+
+    Example
+    -------
+    current = (3, 1)
+    before = (2, 1)
+    (xcurrent - xbefore), (ycurrent - ybefore) = step
+    (3 - 2), (1 - 1) = (1, 0)
+    DIRECTION[(1, 0) = "E" (x increased by 1 from cell before = 1 step East).
+    current = before, etc.
+    """
     direction_letters = ""
     if not path:
         return ""

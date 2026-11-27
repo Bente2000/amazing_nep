@@ -27,12 +27,12 @@ WALL_COLOURS = [
 
 
 ENTRY_COLOUR = "\033[7;92m"
-"""str : Bright green background.
+"""str : Bright green background (inversed).
 """
 
 
 EXIT_COLOUR = "\033[7;91m"
-"""str : Bright red background.
+"""str : Bright red background (inversed).
 """
 
 
@@ -42,15 +42,15 @@ PATH_COLOUR = "\033[94m"
 
 
 PATTERN_COLOUR = "\033[7;95m"  # magenta background
-"""str : Magenta background.
+"""str : Magenta background (inversed).
 """
 
 
 def cell_content(maze: MazeGenerator, x: int, y: int, # was eerst _prive ?
                   path_cells: set[Position]) -> str:
-    """Check if we are at a special cell, return the right content.
+    """Check which kind of cell is passed, return the right content.
 
-    Special cells being: the entry, the exit, 42 pattern and the path.
+    Entry, exit, 42 pattern and path have their own kind of content.
     Give their content the right colour and reset the colour of the terminal.
 
     Parameters
@@ -67,8 +67,9 @@ def cell_content(maze: MazeGenerator, x: int, y: int, # was eerst _prive ?
     Returns
     -------
     str
-        The 3 characters that form the content of the current cell.
-        Regular cells contain 3 spaces.
+        The 3 characters that form the content of the current cell, as well as
+        possible colour codes.
+        Regular cells just contain 3 spaces.
     """
     if (x, y) == maze.entry:
         return f"{ENTRY_COLOUR} S {RESET}"
@@ -134,11 +135,6 @@ def render_ascii(maze: MazeGenerator,                # andere versie
         Change wall colours by rotating through the list of colours
         (menu option 2).
 
-    Methods
-    -------
-                ## NIET AF
-
-
     Returns
     -------
     str
@@ -147,6 +143,19 @@ def render_ascii(maze: MazeGenerator,                # andere versie
     path_cells = set(path) if path else set()
 
     def wall(text: str) -> str:
+        """Add the right colour code to the cell.
+
+        Parameters
+        ----------
+        text : str
+            3 character cell content.
+
+        Returns
+        -------
+        str
+            Content with right colour code and reset the terminal to the default
+            colour.
+        """
         return f"{wall_colour}{text}{RESET}"
 
     lines = []
@@ -179,7 +188,7 @@ def render_ascii(maze: MazeGenerator,                # andere versie
                     bottom += wall("   O")
                 else:
                     bottom += wall("    ")
-        x += 1
+        x = maze.width - 1
         cell = maze.grid[y][x]
         content = cell_content(maze, x, y, path_cells)
         middle += content + wall(")")
@@ -224,7 +233,7 @@ def run_menu(maze: MazeGenerator, output_file: str, path: list[Position] | None)
             print("4: Quit")
 
         try:
-            choice = input("\nChoose an option (1 ,2 ,3 or 4): ").strip()
+            choice = input("\nChoose an option (1, 2, 3 or 4): ").strip()
         except (KeyboardInterrupt): # voor ^D
             print("\n")
             return
